@@ -29,6 +29,8 @@ export class IndexingService implements IndexingServiceBase, OnDestroy {
                 this.foldersHaveChanged = true;
             }),
         );
+
+        this.setupIndexingEventListeners();
     }
 
     public indexingFinished$: Observable<void> = this.indexingFinished.asObservable();
@@ -140,6 +142,9 @@ export class IndexingService implements IndexingServiceBase, OnDestroy {
         this.logger.info('Indexing collection.', 'IndexingService', 'indexCollection');
 
         ipcRenderer.send('indexing-worker', this.createWorkerArgs(task, false));
+    }
+
+    private setupIndexingEventListeners() {
 
         ipcRenderer.on('indexing-worker-message', (_: Electron.IpcRendererEvent, message: IIndexingMessage): void => {
             PromiseUtils.noAwait(this.showSnackBarMessage(message));
